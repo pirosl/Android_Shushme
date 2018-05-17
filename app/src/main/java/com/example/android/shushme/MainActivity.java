@@ -17,6 +17,7 @@ package com.example.android.shushme;
 */
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.example.android.shushme.provider.PlaceContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * On activity result method.
-     * 
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -134,6 +136,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Place place = PlacePicker.getPlace(this, data);
             if(place == null) {
                 Log.i(TAG, "No place selected");
+            }
+            else {
+                String placeName = place.getName().toString();
+                String placeAddress = place.getAddress().toString();
+                String placeId = place.getId();
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
+                getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
             }
         }
     }
