@@ -23,17 +23,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.location.places.PlaceBuffer;
+
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
     private Context mContext;
+
+    private PlaceBuffer placeBuffer;
 
     /**
      * Constructor using the context and the db cursor
      *
      * @param context the calling context/activity
      */
-    public PlaceListAdapter(Context context) {
+    public PlaceListAdapter(Context context, PlaceBuffer placeBuffer) {
         this.mContext = context;
+        this.placeBuffer = placeBuffer;
     }
 
     /**
@@ -59,7 +64,11 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      */
     @Override
     public void onBindViewHolder(PlaceViewHolder holder, int position) {
+        String placeName = placeBuffer.get(position).getName().toString();
+        String placeAddress = placeBuffer.get(position).getAddress().toString();
 
+        holder.nameTextView.setText(placeName);
+        holder.addressTextView.setText(placeAddress);
     }
 
 
@@ -70,7 +79,9 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      */
     @Override
     public int getItemCount() {
-        return 0;
+        if(placeBuffer == null)
+            return 0;
+        return placeBuffer.getCount();
     }
 
     /**
@@ -87,5 +98,12 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
             addressTextView = (TextView) itemView.findViewById(R.id.address_text_view);
         }
 
+    }
+
+    public void swap(PlaceBuffer placeBuffer) {
+        this.placeBuffer = placeBuffer;
+        if(this.placeBuffer != null) {
+            this.notifyDataSetChanged();
+        }
     }
 }
